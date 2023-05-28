@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  api:
+    container_name: "snippet-manager-api"
+    build:
+      context: .
+      dockerfile: Dockerfile_dev
+    ports:
+      - 8080:8080
+    env_file:
+      .env_api
+
+  db:
+    container_name: "snippet-manager-db"
+    image: postgres:12
+    ports:
+      - 5432:5432
+    env_file:
+      - .env_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    external: true
