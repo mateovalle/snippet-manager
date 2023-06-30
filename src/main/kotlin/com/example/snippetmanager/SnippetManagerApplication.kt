@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
 
 @SpringBootApplication
 @RestController
+@CrossOrigin(origins = ["http://localhost:3000"])
 class SnippetManagerController(private val snippetService: SnippetService) {
     @GetMapping("/")
     fun index(@RequestParam("name") name: String) = "Hello, $name!. This is a health test!"
