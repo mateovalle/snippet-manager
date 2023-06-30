@@ -1,35 +1,36 @@
 package com.example.snippetmanager
 
-import Snippet
+import com.example.snippetmanager.entity.Snippet
+import com.example.snippetmanager.dto.SnippetDTO
+import com.example.snippetmanager.service.SnippetService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
+import org.springframework.web.bind.annotation.*
+import java.util.UUID
+
+fun main(args: Array<String>) {
+    runApplication<SnippetManagerController>(*args)
+}
 
 @SpringBootApplication
 @RestController
-class SnippetManagerApplication{
-    @GetMapping("/snippets")
-    fun snippets():List<Snippet>{
-        return listOf(
-            Snippet(1, "Snippet 1",  LocalDate.now()),
-            Snippet(2, "Snippet 2",  LocalDate.now()),
-            Snippet(3, "Snippet 3",  LocalDate.now()),
-            Snippet(4, "Snippet 4",  LocalDate.now()),
-        );
-    }
-
-}
-
-
-fun main(args: Array<String>) {
-    runApplication<SnippetManagerApplication>(*args)
-}
-
-@RestController
-class AuthorizationController {
+class SnippetManagerController(private val snippetService: SnippetService) {
     @GetMapping("/")
     fun index(@RequestParam("name") name: String) = "Hello, $name!. This is a health test!"
+
+    // TODO: Get the userId from the request authentication (principal)
+    @PostMapping("/snippet")
+    fun createSnippet(@RequestBody snippetDTO: SnippetDTO): Snippet {
+        return snippetService.createSnippet(snippetDTO, "testId")
+    }
+
+    @GetMapping("/snippet")
+    fun getSnippetsByUser(): List<Snippet> {
+        return snippetService.getSnippetsByUser("testId")
+    }
+
+    @GetMapping("/snippet/{id}")
+    fun getSnippetById(@PathVariable("id") id: UUID): Snippet {
+        return snippetService.getSnippetById(id)
+    }
 }

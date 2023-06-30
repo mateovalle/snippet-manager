@@ -1,29 +1,34 @@
-import java.time.LocalDate
+package com.example.snippetmanager.entity
 
-//esta clase la cree para ver como devolvia los parametros Spring, dudo que la usemos.
+import jakarta.persistence.*
+import java.time.LocalDateTime
+import java.util.*
 
-class Snippet(private var id:Long, private var content:String, private var lastModified: LocalDate) {
-    fun getId(): Long {
-        return id
-    }
-
-    fun getContent():String{
-        return content
-    }
-
-    fun getLastModified():LocalDate{
-        return lastModified
-    }
-
-    fun setId(id:Long){
-        this.id = id
-    }
-
-    fun setContent(content:String){
-        this.content = content
-    }
-
-    fun setLastModified(lastModified: LocalDate){
-        this.lastModified = lastModified
-    }
+enum class SnippetType {
+    PRINTSCRIPT
 }
+
+@Entity
+data class Snippet(
+    @Id @GeneratedValue
+    val id: UUID? = null,
+
+    @Column(nullable = false)
+    val userId: String = "",
+
+    @Column(nullable = false)
+    val name: String = "",
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val type: SnippetType = SnippetType.PRINTSCRIPT,
+
+    @Column(nullable = false)
+    val content: String = "",
+
+    @Column(nullable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(nullable = false)
+    val updatedAt: LocalDateTime = LocalDateTime.now()
+)
