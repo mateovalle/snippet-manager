@@ -23,4 +23,12 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
     fun getSnippetById(id: UUID): Snippet {
         return snippetRepository.findById(id).get()
     }
+
+    fun format(id:UUID, userId: String){
+        val snippet = snippetRepository.findById(id).get()
+        if (snippet.userId !== userId) throw IllegalAccessException("do not have access")
+        // TODO: format snippet
+        val formatedSnipet = snippet
+        snippetRepository.save(formatedSnipet)
+    }
 }
