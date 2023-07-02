@@ -1,6 +1,8 @@
 package com.example.snippetmanager.entity
 
 import jakarta.persistence.*
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 import java.util.*
 
@@ -9,6 +11,7 @@ enum class SnippetType {
 }
 
 @Entity
+@EntityListeners(AuditingEntityListener::class)
 data class Snippet(
     @Id @GeneratedValue
     val id: UUID? = null,
@@ -29,6 +32,7 @@ data class Snippet(
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
-    @Column(nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    @LastModifiedDate
+    @Column(nullable = true)
+    val updatedAt: LocalDateTime? = null
 )

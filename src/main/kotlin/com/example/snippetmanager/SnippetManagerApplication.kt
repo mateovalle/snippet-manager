@@ -1,10 +1,12 @@
 package com.example.snippetmanager
 
 import com.example.snippetmanager.entity.Snippet
-import com.example.snippetmanager.dto.SnippetDTO
+import com.example.snippetmanager.dto.CreateSnippetDTO
+import com.example.snippetmanager.dto.UpdateSnippetDTO
 import com.example.snippetmanager.service.SnippetService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
@@ -15,13 +17,14 @@ fun main(args: Array<String>) {
 @SpringBootApplication
 @RestController
 @CrossOrigin(origins = ["http://localhost:3000"])
+@EnableJpaAuditing
 class SnippetManagerController(private val snippetService: SnippetService) {
     @GetMapping("/")
     fun index(@RequestParam("name") name: String) = "Hello, $name!. This is a health test!"
 
     // TODO: Get the userId from the request authentication (principal)
     @PostMapping("/snippet")
-    fun createSnippet(@RequestBody snippetDTO: SnippetDTO): Snippet {
+    fun createSnippet(@RequestBody snippetDTO: CreateSnippetDTO): Snippet {
         return snippetService.createSnippet(snippetDTO, "testId")
     }
 
@@ -33,5 +36,9 @@ class SnippetManagerController(private val snippetService: SnippetService) {
     @GetMapping("/snippet/{id}")
     fun getSnippetById(@PathVariable("id") id: UUID): Snippet {
         return snippetService.getSnippetById(id)
+    }
+    @PutMapping("/snippet/{id}")
+    fun updateSnippetById(@PathVariable("id") id: UUID, @RequestBody snippetDTO: UpdateSnippetDTO): Snippet {
+        return snippetService.updateSnippetById(id, snippetDTO)
     }
 }
