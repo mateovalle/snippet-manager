@@ -1,6 +1,6 @@
 # redis host and port parameters
 redis:
-  host: localhost
+  host: redis
   port: 6379
 
 # streamKeys to be used by producers
