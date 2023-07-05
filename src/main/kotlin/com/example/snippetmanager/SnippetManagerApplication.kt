@@ -8,6 +8,8 @@ import com.example.snippetmanager.service.SnippetService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
+import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
@@ -24,15 +26,19 @@ class SnippetManagerController(private val snippetService: SnippetService, priva
 
     // TODO: Get the userId from the request authentication (principal)
     @PostMapping("/snippet")
-    suspend fun createSnippet(@RequestBody snippetDTO: CreateSnippetDTO): Snippet {
-        val snippet = snippetService.createSnippet(snippetDTO, "testId")
+    suspend fun createSnippet(@RequestBody snippetDTO: CreateSnippetDTO, authentication: Authentication, @RequestHeader("Authorization") authorizationHeader: String): Snippet {
+        val principal = authentication.principal
+        if (principal !is Jwt) {
+            throw Exception("No JWT")
+        }
+        val snippet = snippetService.createSnippet(snippetDTO, principal.subject, authorizationHeader.substring(7))
         producer.publishEvent(snippet.id.toString())
         return snippet
     }
 
     @GetMapping("/snippet")
-    fun getSnippetsByUser(): List<Snippet> {
-        return snippetService.getSnippetsByUser("testId")
+    fun getSnippetsByUser(authentication: Authentication): List<Snippet> {
+        return snippetService.getSnippetsByUser((authentication.principal as Jwt).subject)
     }
 
     @GetMapping("/snippet/{id}")
