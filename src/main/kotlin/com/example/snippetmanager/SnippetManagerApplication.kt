@@ -17,7 +17,6 @@ fun main(args: Array<String>) {
 
 @SpringBootApplication
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000"])
 @EnableJpaAuditing
 class SnippetManagerController(private val snippetService: SnippetService, private val producer: SnippetCreatedProducer) {
     @GetMapping("/")
