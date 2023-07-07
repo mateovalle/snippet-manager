@@ -2,6 +2,7 @@ package com.example.snippetmanager
 
 import com.example.snippetmanager.entity.Snippet
 import com.example.snippetmanager.dto.CreateSnippetDTO
+import com.example.snippetmanager.dto.GetSnippetDTO
 import com.example.snippetmanager.dto.UpdateSnippetDTO
 import com.example.snippetmanager.producer.SnippetCreatedProducer
 import com.example.snippetmanager.service.SnippetService
@@ -37,16 +38,26 @@ class SnippetManagerController(private val snippetService: SnippetService, priva
     }
 
     @GetMapping("/snippet")
-    fun getSnippetsByUser(authentication: Authentication): List<Snippet> {
-        return snippetService.getSnippetsByUser((authentication.principal as Jwt).subject)
+    fun getSnippetsByUser(authentication: Authentication, @RequestHeader("Authorization") authorizationHeader: String): List<GetSnippetDTO> {
+        return snippetService.getSnippetsByUser(getAuth0Id(authentication), authorizationHeader.substring(7))
     }
 
     @GetMapping("/snippet/{id}")
-    fun getSnippetById(@PathVariable("id") id: UUID): Snippet {
-        return snippetService.getSnippetById(id)
+    fun getSnippetById(@PathVariable("id") id: UUID, authentication: Authentication, @RequestHeader("Authorization") authorizationHeader: String): Snippet {
+        return snippetService.getSnippetById(id, getAuth0Id(authentication), authorizationHeader.substring(7))
     }
+
     @PutMapping("/snippet/{id}")
-    fun updateSnippetById(@PathVariable("id") id: UUID, @RequestBody snippetDTO: UpdateSnippetDTO): Snippet {
-        return snippetService.updateSnippetById(id, snippetDTO)
+    fun updateSnippetById(@PathVariable("id") id: UUID, @RequestBody snippetDTO: UpdateSnippetDTO, authentication: Authentication, @RequestHeader("Authorization") authorizationHeader: String): Snippet {
+        return snippetService.updateSnippetById(id, snippetDTO, getAuth0Id(authentication), authorizationHeader.substring(7))
+    }
+
+    @GetMapping("/snippet/{id}/owner")
+    fun getSnippetOwner(@PathVariable("id") id: UUID): String {
+        return snippetService.getSnippetOwner(id)
+    }
+
+    private fun getAuth0Id(authentication: Authentication): String {
+        return (authentication.principal as Jwt).subject
     }
 }

@@ -8,4 +8,5 @@ import com.example.snippetmanager.entity.Snippet
 @Repository
 interface SnippetRepository : JpaRepository<Snippet, UUID> {
     fun findByUserId(userId: String): List<Snippet>
+    fun getSnippetsByIdIn(ids: List<UUID>): List<Snippet>
 }

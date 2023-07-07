@@ -33,7 +33,7 @@ class LintingUpdatedConsumer @Autowired constructor(
     override fun onMessage(record: ObjectRecord<String, String>) {
         // What we want to do with the stream
         println("Id: ${record.id}, Value: ${record.value}, Stream: ${record.stream}, Group: ${groupId}")
-        val snippets = snippetService.getSnippetsByUser(record.value)
+        val snippets = snippetService.getOwnedSnippets(record.value)
         snippetService.updateManyCompliance(snippets, ComplianceStatus.PENDING)
         snippets.forEach { snippet ->
             GlobalScope.launch {
