@@ -1,7 +1,7 @@
 package com.example.snippetmanager.service
 
+import org.json.JSONArray
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.configurationprocessor.json.JSONArray
 import org.springframework.stereotype.Service
 import java.net.HttpURLConnection
 import java.net.URL
