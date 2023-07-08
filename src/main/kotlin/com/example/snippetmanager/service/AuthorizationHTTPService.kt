@@ -6,9 +6,6 @@ import org.springframework.stereotype.Service
 import java.net.HttpURLConnection
 import java.net.URL
 
-@Value("\${SNIPPET_MANAGER_URL:http://localhost:8080/")
-const val baseUrl: String = "http://localhost:8080/"
-
 
 data class Authorization(
         val userId: String,
@@ -18,6 +15,9 @@ data class Authorization(
 
 @Service
 class AuthorizationHTTPService {
+    @Value("\${authorizer-api.url}")
+    private lateinit var baseUrl: String
+
     fun createAuthorization(bearerToken: String, userId: String, authorizationType: String, snippetId: String) {
         println(baseUrl)
         val url = URL(baseUrl + "new")
