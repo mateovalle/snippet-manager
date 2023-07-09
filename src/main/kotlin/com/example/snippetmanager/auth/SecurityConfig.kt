@@ -15,6 +15,9 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.reactive.CorsConfigurationSource
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebFluxSecurity
@@ -24,6 +27,18 @@ class SecurityConfig(
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     val issuer: String,
 ) {
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("http://localhost:3000")
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedHeaders = listOf("DNT","User-Agent","X-Requested-With","If-Modified-Since","Cache-Control","Content-Type","Range","Authorization")
+        configuration.exposedHeaders = listOf("Content-Length","Content-Range")
+        val urlBasedCorsConfigurationSource = UrlBasedCorsConfigurationSource()
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", configuration)
+        return urlBasedCorsConfigurationSource
+    }
+
     @Bean
     fun securityWebFilterChain(serverSecurity: ServerHttpSecurity): SecurityWebFilterChain = serverSecurity
         .authorizeExchange {
