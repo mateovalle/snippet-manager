@@ -3,6 +3,7 @@ package com.example.snippetmanager.auth
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
@@ -27,6 +28,7 @@ class SecurityConfig(
     fun securityWebFilterChain(serverSecurity: ServerHttpSecurity): SecurityWebFilterChain = serverSecurity
         .authorizeExchange {
             it
+                .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/snippet/*").authenticated()
                 .pathMatchers("/snippet").authenticated()
                 .anyExchange().denyAll()
