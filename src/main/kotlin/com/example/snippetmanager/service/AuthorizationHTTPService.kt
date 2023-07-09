@@ -45,7 +45,6 @@ class AuthorizationHTTPService {
         val response = connection.inputStream.bufferedReader().use { it.readText() }
         connection.disconnect()
         val jsonResponse = JSONArray(response)
-        println(jsonResponse)
         val authorizations = mutableListOf<Authorization>()
         for (i in 0 until jsonResponse.length()) {
             val auth = jsonResponse.getJSONObject(i)

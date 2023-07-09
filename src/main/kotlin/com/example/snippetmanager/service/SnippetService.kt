@@ -55,11 +55,14 @@ class SnippetService @Autowired constructor(private val snippetRepository: Snipp
     }
 
     fun getSnippetById(id: UUID, userId: String, bearerToken: String): Snippet {
-        // If the user is not authorized to write, check if they are authorized to read
-        var isAuthorized = authorizationHTTPService.isAuthorized(bearerToken, userId, "WRITE", id.toString());
-        if (!isAuthorized) isAuthorized = authorizationHTTPService.isAuthorized(bearerToken, userId, "READ", id.toString());
-        if (!isAuthorized) {
-            throw ForbiddenException("User not authorized to read snippet.")
+        // If the user is not a client, check if they are authorized to write
+        if (!userId.contains("client")) {
+            // If the user is not authorized to write, check if they are authorized to read
+            var isAuthorized = authorizationHTTPService.isAuthorized(bearerToken, userId, "WRITE", id.toString());
+            if (!isAuthorized) isAuthorized = authorizationHTTPService.isAuthorized(bearerToken, userId, "READ", id.toString());
+            if (!isAuthorized) {
+                throw ForbiddenException("User not authorized to read snippet.")
+            }
         }
         return snippetRepository.findById(id).orElseThrow {
             throw NotFoundException("Snippet not found")
@@ -68,7 +71,7 @@ class SnippetService @Autowired constructor(private val snippetRepository: Snipp
 
     @Transactional
     fun updateSnippetById(id: UUID, snippetDTO: UpdateSnippetDTO, userId: String, bearerToken: String): Snippet {
-        val isAuthorized = authorizationHTTPService.isAuthorized(bearerToken, userId, "WRITE", id.toString());
+        val isAuthorized = if (userId.contains("client")) true else authorizationHTTPService.isAuthorized(bearerToken, userId, "WRITE", id.toString())
         if (!isAuthorized) {
             throw ForbiddenException("User not authorized to update snippet.")
         }
