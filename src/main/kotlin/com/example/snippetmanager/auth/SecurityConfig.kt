@@ -46,6 +46,7 @@ class SecurityConfig(
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/snippet/*").authenticated()
                 .pathMatchers("/snippet").authenticated()
+                .pathMatchers("/snippet/*/*").authenticated()
                 .anyExchange().denyAll()
         }
         .oauth2ResourceServer { it.jwt(withDefaults()) }
