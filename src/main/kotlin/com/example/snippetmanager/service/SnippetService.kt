@@ -2,10 +2,13 @@ package com.example.snippetmanager.service
 
 import com.example.snippetmanager.entity.Snippet
 import com.example.snippetmanager.dto.CreateSnippetDTO
+import com.example.snippetmanager.dto.CreateSnippetTestDTO
 import com.example.snippetmanager.dto.GetSnippetDTO
 import com.example.snippetmanager.dto.UpdateSnippetDTO
 import com.example.snippetmanager.entity.ComplianceStatus
+import com.example.snippetmanager.entity.TestCase
 import com.example.snippetmanager.repository.SnippetRepository
+import com.example.snippetmanager.repository.TestCaseRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -20,7 +23,7 @@ class ForbiddenException(message: String) : RuntimeException(message)
 class NotFoundException(message: String) : RuntimeException(message)
 
 @Service
-class SnippetService @Autowired constructor(private val snippetRepository: SnippetRepository, private val authorizationHTTPService: AuthorizationHTTPService) {
+class SnippetService @Autowired constructor(private val snippetRepository: SnippetRepository, private val authorizationHTTPService: AuthorizationHTTPService, private val testCaseRepository: TestCaseRepository) {
 
     fun createSnippet(snippetDTO: CreateSnippetDTO, userId: String, bearerToken: String): Snippet {
         val snippet = Snippet(
@@ -38,6 +41,19 @@ class SnippetService @Autowired constructor(private val snippetRepository: Snipp
             throw e;
         }
         return savedSnippet
+    }
+
+    fun createSnippetTest(userId: String, snippetTestDTO: CreateSnippetTestDTO): TestCase {
+        val snippet = snippetRepository.findById(UUID.fromString(snippetTestDTO.snippetId)).orElseThrow { NotFoundException("Snippet not found") }
+        if (snippet.userId != userId) {
+            throw ForbiddenException("User doesn't own the snippet")
+        }
+        val testCase = TestCase(
+            snippet = snippet,
+            inputs = snippetTestDTO.inputs,
+            outputs = snippetTestDTO.outputs,
+        )
+        return testCaseRepository.save(testCase)
     }
 
     fun getSnippetsByUser(userId: String, bearerToken: String): List<GetSnippetDTO> {
@@ -94,6 +110,12 @@ class SnippetService @Autowired constructor(private val snippetRepository: Snipp
             throw NotFoundException("Snippet not found")
         }
         return snippet.userId
+    }
+
+    fun getSnippetTestById(id: UUID): TestCase {
+        return testCaseRepository.findBySnippetId(id).orElseThrow {
+            throw NotFoundException("Snippet test not found")
+        }
     }
 
 }

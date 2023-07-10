@@ -2,8 +2,10 @@ package com.example.snippetmanager
 
 import com.example.snippetmanager.entity.Snippet
 import com.example.snippetmanager.dto.CreateSnippetDTO
+import com.example.snippetmanager.dto.CreateSnippetTestDTO
 import com.example.snippetmanager.dto.GetSnippetDTO
 import com.example.snippetmanager.dto.UpdateSnippetDTO
+import com.example.snippetmanager.entity.TestCase
 import com.example.snippetmanager.producer.SnippetCreatedProducer
 import com.example.snippetmanager.service.SnippetService
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -40,6 +42,16 @@ class SnippetManagerController(private val snippetService: SnippetService, priva
     @GetMapping("/snippet")
     fun getSnippetsByUser(authentication: Authentication, @RequestHeader("Authorization") authorizationHeader: String): List<GetSnippetDTO> {
         return snippetService.getSnippetsByUser(getAuth0Id(authentication), authorizationHeader.substring(7))
+    }
+
+    @PostMapping("/snippet/test")
+    fun createSnippetTest(@RequestBody snippetTestDTO: CreateSnippetTestDTO, authentication: Authentication): TestCase {
+        return snippetService.createSnippetTest(getAuth0Id(authentication), snippetTestDTO)
+    }
+
+    @GetMapping("/snippet/test/{id}")
+    fun getSnippetTestById(@PathVariable("id") id: UUID): TestCase {
+        return snippetService.getSnippetTestById(id)
     }
 
     @GetMapping("/snippet/{id}")
