@@ -15,8 +15,8 @@ data class Authorization(
 
 @Service
 class AuthorizationHTTPService {
-    @Value("\${authorizer-api.url}")
-    private lateinit var baseUrl: String
+
+    private val baseUrl = System.getenv("AUTHORIZER_URL") ?: "Not set :)"
 
     fun createAuthorization(bearerToken: String, userId: String, authorizationType: String, snippetId: String) {
         println(baseUrl)
